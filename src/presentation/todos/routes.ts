@@ -16,6 +16,7 @@ export class TodoRoutes {
         router.post('/', (req, res) => todoController.createTodo(req, res));
 
         router.put('/:todoId', (req, res) => todoController.updateTodo(req, res));
+
         router.delete('/:todoId', (req, res) => todoController.deleteTodo(req, res));
 
 
