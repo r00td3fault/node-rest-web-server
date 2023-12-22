@@ -73,7 +73,7 @@ describe('Todo route testing', () => {
 
         const { body } = await request(testServer.app)
             .get(`/api/todos/${todoId}`)
-            .expect(400);
+            .expect(404);
 
         expect(body.error).toBeDefined()
         expect(body.error).toContain(`Todo with id ${todoId} not found`);
@@ -174,8 +174,6 @@ describe('Todo route testing', () => {
         expect(body.error).toContain('CompletedAt must be a valid date');
     });
 
-    //TODO: errores personalizados
-
     test('should return 404 error when TODO not found -> PUT api/todos/:todoId', async () => {
 
         const textMessage = 'texto de prueba';
@@ -198,7 +196,7 @@ describe('Todo route testing', () => {
             .send({
                 text: textMessage,
             })
-            .expect(400);
+            .expect(404);
 
 
         expect(body.error).toBeDefined();

@@ -7,3 +7,5 @@ keys/
 /postgres
 
 dist/
+
+coverage/

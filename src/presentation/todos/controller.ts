@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { CreateTodoDto, UpdateTodoDto } from "../../domain/dtos";
-import { CreateTodo, DeleteTodo, GetTodo, GetTodos, TodoRepository, UpdateTodo } from "../../domain";
+import { CreateTodo, CustomError, DeleteTodo, GetTodo, GetTodos, TodoRepository, UpdateTodo } from "../../domain";
 
 
 export class TodosController {
@@ -10,13 +10,21 @@ export class TodosController {
         private readonly todoRepository: TodoRepository
     ) { }
 
+    private handleError = (res: Response, error: unknown) => {
+        if (error instanceof CustomError) {
+            res.status(error.statusCode).json({ error: error.message });
+            return;
+        }
+
+        res.status(500).json({ error: 'Internal server error - check logs ' });
+    }
 
     public getTodos = (req: Request, res: Response) => {
 
         new GetTodos(this.todoRepository)
             .execute()
             .then(todos => res.json(todos))
-            .catch(error => res.status(400).json({ error }));
+            .catch(error => this.handleError(res, error));
     }
 
     public getTodoById = (req: Request, res: Response) => {
@@ -26,7 +34,7 @@ export class TodosController {
         new GetTodo(this.todoRepository)
             .execute(todoId)
             .then(todo => res.json(todo))
-            .catch(error => res.status(400).json({ error }));
+            .catch(error => this.handleError(res, error));
     }
 
 
@@ -37,7 +45,7 @@ export class TodosController {
         new CreateTodo(this.todoRepository)
             .execute(createTodoDto!)
             .then(newTodo => res.status(201).json(newTodo))
-            .catch(error => res.status(400).json({ error }));
+            .catch(error => this.handleError(res, error));
 
     }
 
@@ -49,7 +57,7 @@ export class TodosController {
         new UpdateTodo(this.todoRepository)
             .execute(updateTodoDto!)
             .then(updatedTodo => res.json(updatedTodo))
-            .catch(error => res.status(400).json({ error }));
+            .catch(error => this.handleError(res, error));
     }
 
     public deleteTodo = (req: Request, res: Response) => {
@@ -59,7 +67,7 @@ export class TodosController {
         new DeleteTodo(this.todoRepository)
             .execute(todoId)
             .then(deletedTodo => res.json(deletedTodo))
-            .catch(error => res.status(400).json({ error }));
+            .catch(error => this.handleError(res, error));
 
     }
 
